@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Data\Person;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -37,5 +38,70 @@ class CollectionTest extends TestCase
     }
 
     // Mapping untuk memgubah benuk data menjadi data lain
+    public function testMap()
+    {
+        $collection = collect([1, 2, 3]);
+        $result = $collection->map(function ($item) {
+            return $item * 2;
+        });
 
+        $this->assertEqualsCanonicalizing([2, 4, 6], $result->all());
+    }
+
+    // mapinto
+    public function testMapInto()
+    {
+        $collection = collect(["Jubi"]);
+        $result = $collection->mapInto(Person::class);
+        $this->assertEquals([new Person("Jubi")], $result->all());
+    }
+
+    // mapSpead data yang pisah dan di satuin lagi
+    public function testMapSpread()
+    {
+        $collection = collect([
+            ["Jubi", "Ximenes"],
+            ["Assuncao", "ZuBy"]
+        ]);
+
+        $result = $collection->mapSpread(function ($firstName, $lastName) {
+            $fullName = $firstName . ' ' . $lastName;
+            return new Person($fullName);
+        });
+
+        $this->assertEquals([
+            new Person("Jubi Ximenes"),
+            new Person("Assuncao ZuBy"),
+        ], $result->all());
+    }
+
+    // maptogroups
+    public function testMapToGroups()
+    {
+        $collection = collect([
+            [
+                "name" => "Jubi",
+                "departament" => "IT"
+            ],
+            [
+                "name" => "Zawa",
+                "departament" => "LAW"
+            ],
+            [
+                "name" => "Max",
+                "departament" => "IT"
+            ],
+        ]);
+
+        $result = $collection->mapToGroups(function ($person) {
+            return [
+                $person["departament"] => $person["name"]
+            ];
+        });
+
+        $this->assertEquals([
+            "IT" => collect(["Jubi", "Max"]),
+            "LAW" => collect(["Zawa"])
+        ], $result->all());
+    }
 }
