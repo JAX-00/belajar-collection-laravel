@@ -104,4 +104,39 @@ class CollectionTest extends TestCase
             "LAW" => collect(["Zawa"])
         ], $result->all());
     }
+    // ZIP mengaungkan data dalam array yang sama
+    public function testZip()
+    {
+        $collection1 = collect([1, 2, 3]);
+        $collection2 = collect([4, 5, 6]);
+        $collection3 = $collection1->zip($collection2);
+
+        $this->assertEquals([
+            collect([1, 4]),
+            collect([2, 5]),
+            collect([3, 6]),
+        ], $collection3->all());
+    }
+
+    // Concat yaitu mengabungkan dengan array berikutnya
+    public function testConcat()
+    {
+        $collection1 = collect([1, 2, 3]);
+        $collection2 = collect([4, 5, 6]);
+        $collection3 = $collection1->concat($collection2);
+
+        $this->assertEqualsCanonicalizing([1, 2, 3, 4, 5, 6], $collection3->all());
+    }
+    // combine
+    public function testCombine()
+    {
+        $collection1 = collect(["name", "country"]);
+        $collection2 = collect(["Juby", "Timor-Leste"]);
+        $collection3 = $collection1->combine($collection2);
+
+        $this->assertEqualsCanonicalizing([
+            "name" => "Jubi",
+            "country" => "Timor-Leste",
+        ], $collection3->all());
+    }
 }
